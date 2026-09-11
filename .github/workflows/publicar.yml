@@ -54,12 +54,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # La respuesta se guarda en un archivo, no en una variable. Con
+          # cuerpo=$(curl ...) la sustitución de comando se come los saltos de
+          # línea finales, así que el cmp comparaba 2588 bytes contra los 2589
+          # del commit y salía distinto SIEMPRE, con el sitio publicado
+          # perfecto. Medido el 11-sep contra wall101.pages.dev.
           esperado=$(grep -c '<article' dist/index.html)
           for i in $(seq 1 18); do
             sleep 10
-            cuerpo=$(curl -sL --max-time 20 "$URL/" || true)
-            visto=$(printf '%s' "$cuerpo" | grep -c '<article' || true)
-            if [ "$visto" = "$esperado" ] && printf '%s' "$cuerpo" | cmp -s - dist/index.html; then
+            curl -sL --max-time 20 "$URL/" -o /tmp/vivo.html || true
+            visto=$(grep -c '<article' /tmp/vivo.html 2>/dev/null || echo 0)
+            if [ "$visto" = "$esperado" ] && cmp -s /tmp/vivo.html dist/index.html; then
               msg="wall101: $URL · $esperado posts · idéntico al commit · intento $i · verde"
               echo "$msg"
               gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments" -f body="$msg" >/dev/null
