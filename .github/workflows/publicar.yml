@@ -12,6 +12,14 @@ name: Publicar wall
 on:
   push:
     branches: [main]
+    # Aquí NO se puede ignorar `**.md`, aunque el coordinador lo sugiriera
+    # para los otros dos: los posts del wall SON `.md` y son el contenido.
+    # Ignorarlos dejaría el tablero congelado. Se ignora sólo lo que de
+    # verdad es documentación del repositorio.
+    paths-ignore:
+      - 'OPERAR.md'
+      - 'README.md'
+      - 'claude/**'
   workflow_dispatch:
 
 permissions:
