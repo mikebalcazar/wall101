@@ -19,6 +19,10 @@ on:
     paths-ignore:
       - 'OPERAR.md'
       - 'README.md'
+      # Se agregó el 12-sep en los once repositorios y se colaba por esta
+      # lista, que nombra archivos uno por uno justamente porque aquí NO se
+      # puede usar `**.md`: los posts del wall son `.md` y son el contenido.
+      - 'CLAUDE.md'
       - 'claude/**'
   workflow_dispatch:
 
